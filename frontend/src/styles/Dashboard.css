@@ -1,0 +1,52 @@
+.dashboard {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.dashboard h2 {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.transactions-list {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-top: 40px;
+}
+
+.transactions-list h3 {
+  margin-bottom: 20px;
+}
+
+.transaction-item {
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.transaction-amount {
+  font-weight: bold;
+}
+
+.transaction-amount.expense {
+  color: #e74c3c;
+}
+
+.transaction-amount.income {
+  color: #2ecc71;
+}
+
+.transaction-category {
+  color: #666;
+  margin-left: 15px;
+}
+
+.transaction-date {
+  color: #999;
+  font-size: 0.9em;
+}

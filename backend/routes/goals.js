@@ -21,7 +21,7 @@ router.post("/add", auth, async (req, res) => {
 // Get goals
 router.get("/", auth, async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM goal WHERE user_id=$1", [req.user.id]);
+    const result = await pool.query("SELECT * FROM goals WHERE user_id=$1", [req.user.id]);
     res.json(result.rows);
   } catch (err) {
     res.status(500).json({ error: err.message });

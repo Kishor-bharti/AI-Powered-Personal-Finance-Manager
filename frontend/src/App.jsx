@@ -4,6 +4,7 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import AddTransaction from "./pages/AddTransaction";
 import Layout from "./components/Layout";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
@@ -15,17 +16,21 @@ function App() {
         <Route
           path="/"
           element={
-            <Layout>
-              <Dashboard />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <Dashboard />
+              </Layout>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/add"
           element={
-            <Layout>
-              <AddTransaction />
-            </Layout>
+            <ProtectedRoute>
+              <Layout>
+                <AddTransaction />
+              </Layout>
+            </ProtectedRoute>
           }
         />
       </Routes>
