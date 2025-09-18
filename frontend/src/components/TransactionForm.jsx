@@ -1,121 +1,151 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import API from "../api";
+import "../styles/TransactionForm.css";
 
-function TransactionForm({ onAdd }) {
-  const [type, setType] = useState("expense");
-  const [category, setCategory] = useState("");
-  const [amount, setAmount] = useState("");
-  const [date, setDate] = useState("");
-  
-  // Handle enter key press
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      handleSubmit();
+function TransactionForm({ onAdd, editData, onUpdate }) {
+  const [formData, setFormData] = useState({
+    type: "expense",
+    category: "",
+    amount: "",
+    date: "",
+    payment_method: "Cash",
+    description: ""
+  });
+
+  useEffect(() => {
+    if (editData) {
+      setFormData({
+        type: editData.type || "expense",
+        category: editData.category || "",
+        amount: editData.amount || "",
+        date: editData.date || "",
+        payment_method: editData.payment_method || "Cash",
+        description: editData.description || ""
+      });
     }
+  }, [editData]);
+  
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   const handleSubmit = async () => {
-    if (!category || !amount || !date) {
-      alert("Please fill all fields");
+    const { type, category, amount, date, payment_method } = formData;
+    
+    if (!category || !amount || !date || !payment_method) {
+      alert("Please fill all required fields");
       return;
     }
+    
     if (isNaN(amount) || amount <= 0) {
       alert("Please enter a valid amount");
       return;
-   }    
+    }
+    
     try {
-      await API.post("/transactions/add", { type, category, amount, date });
-      onAdd();
+      if (editData) {
+        const response = await API.put(`/transactions/${editData.txn_id}`, formData);
+        if (response.data) {
+          onUpdate();
+        } else {
+          throw new Error("Failed to update transaction");
+        }
+      } else {
+        const response = await API.post("/transactions/add", formData);
+        if (response.data) {
+          onAdd();
+          // Reset form after successful addition
+          setFormData({
+            type: "expense",
+            category: "",
+            amount: "",
+            date: "",
+            payment_method: "Cash",
+            description: ""
+          });
+        } else {
+          throw new Error("Failed to add transaction");
+        }
+      }
     } catch (err) {
-      alert("Failed to add transaction");
+      alert(editData ? "Failed to update transaction" : "Failed to add transaction");
     }
   };
 
   return (
-    <div style={{ 
-      background: "white",
-      padding: "20px",
-      borderRadius: "8px",
-      boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
-    }}>
-      <h3 style={{ marginTop: 0, marginBottom: "20px" }}>Add Transaction</h3>
-      <div style={{ display: "grid", gap: "15px", gridTemplateColumns: "1fr 1fr" }}>
+    <div className="transaction-form">
+      <h3>{editData ? 'Edit Transaction' : 'Add Transaction'}</h3>
+      <div className="form-grid">
         <select 
-          value={type} 
-          onChange={(e) => setType(e.target.value)}
-          style={{
-            padding: "12px",
-            borderRadius: "4px",
-            border: "1px solid #ddd",
-            backgroundColor: "white",
-            color: "#333",
-            width: "100%",
-            fontSize: "16px",
-            cursor: "pointer"
-          }}
+          name="type"
+          value={formData.type}
+          onChange={handleChange}
         >
-          <option value="expense" style={{ color: "#e74c3c" }}>Expense</option>
-          <option value="income" style={{ color: "#2ecc71" }}>Income</option>
+          <option value="expense">Expense</option>
+          <option value="income">Income</option>
         </select>
+
+        <select
+          name="category"
+          value={formData.category}
+          onChange={handleChange}
+        >
+          <option value="">Select Category</option>
+          <option value="Food">Food</option>
+          <option value="Transport">Transport</option>
+          <option value="Utilities">Utilities</option>
+          <option value="Entertainment">Entertainment</option>
+          <option value="Shopping">Shopping</option>
+          <option value="Salary">Salary</option>
+          <option value="Investment">Investment</option>
+          <option value="Other">Other</option>
+        </select>
+
         <input 
-          placeholder="Category" 
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          onKeyPress={handleKeyPress}
-          style={{
-            padding: "12px",
-            borderRadius: "4px",
-            border: "1px solid #ddd",
-            fontSize: "16px",
-            color: "#333",
-            backgroundColor: "white"
-          }}
-        />
-        <input 
+          name="amount"
           placeholder="Amount" 
           type="number"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          onKeyPress={handleKeyPress}
-          style={{
-            padding: "12px",
-            borderRadius: "4px",
-            border: "1px solid #ddd",
-            fontSize: "16px",
-            color: "#333",
-            backgroundColor: "white"
-          }}
+          value={formData.amount}
+          onChange={handleChange}
         />
+
         <input 
+          name="date"
           type="date" 
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          style={{
-            padding: "12px",
-            borderRadius: "4px",
-            border: "1px solid #ddd",
-            fontSize: "16px",
-            color: "#333",
-            backgroundColor: "transparent",
-            cursor: "pointer"
-          }}
+          value={formData.date}
+          onChange={handleChange}
         />
+
+        <select
+          name="payment_method"
+          value={formData.payment_method}
+          onChange={handleChange}
+        >
+          <option value="Cash">Cash</option>
+          <option value="Credit Card">Credit Card</option>
+          <option value="Debit Card">Debit Card</option>
+          <option value="UPI">UPI</option>
+          <option value="Net Banking">Net Banking</option>
+          <option value="Other">Other</option>
+        </select>
+
+        <div className="full-width">
+          <textarea
+            name="description"
+            placeholder="Description (optional)"
+            value={formData.description}
+            onChange={handleChange}
+          />
+        </div>
+
+        <button className="submit-button" onClick={handleSubmit}>
+          {editData ? 'Update Transaction' : 'Add Transaction'}
+        </button>
       </div>
-      <button 
-        onClick={handleSubmit}
-        style={{
-          width: "100%",
-          padding: "10px",
-          backgroundColor: "#4CAF50",
-          color: "white",
-          border: "none",
-          borderRadius: "4px",
-          cursor: "pointer",
-          marginTop: "15px"
-        }}
-      >
-        Add Transaction
-      </button>
     </div>
   );
 }

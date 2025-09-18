@@ -163,12 +163,10 @@ function Dashboard() {
                   <td className="capitalize">{t.type || 'N/A'}</td>
                   <td>{t.category || 'N/A'}</td>
                   <td className={`amount ${t.type}`}>
-                    <span>
-                      {t.type === 'expense' ? '-' : '+'}₹{Number(t.amount || 0).toLocaleString('en-IN', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                      })}
-                    </span>
+                    {t.type === 'expense' ? '-' : '+'}₹{Number(t.amount || 0).toLocaleString('en-IN', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2
+                    })}
                   </td>
                   <td className="capitalize">{t.payment_method || 'Cash'}</td>
                   <td>{t.description || '-'}</td>
