@@ -27,9 +27,18 @@ router.post("/add", auth, async (req, res) => {
   }
 });
 
+// Error handler wrapper
+const asyncHandler = (fn) => (req, res, next) => {
+  Promise.resolve(fn(req, res, next)).catch((error) => {
+    console.error("Route Error:", error);
+    res.status(500).json({ error: error.message });
+  });
+};
+
 // Get transactions with filters
 router.get("/", auth, async (req, res) => {
   try {
+    console.log("Fetching transactions for user:", req.user.id);
     const { startDate, endDate, category, type } = req.query;
     let query = `
       SELECT txn_id, user_id, type, category, amount, date, payment_method, description 
@@ -59,7 +68,7 @@ router.get("/", auth, async (req, res) => {
       params.push(type);
     }
 
-    query += " ORDER BY date DESC";
+    query += " ORDER BY date DESC, txn_id DESC";
     const result = await pool.query(query, params);
     res.json(result.rows);
   } catch (err) {

@@ -1,10 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api";
 import AuthHeader from "../components/AuthHeader";
 import Footer from "../components/Footer";
 
 function Register() {
+  useEffect(() => {
+    document.title = "Finance Manager | Sign Up";
+  }, []);
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

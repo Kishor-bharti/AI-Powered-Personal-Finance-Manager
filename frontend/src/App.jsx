@@ -3,6 +3,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import AddTransaction from "./pages/AddTransaction";
+import Goals from "./pages/Goals";
 import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -29,6 +30,16 @@ function App() {
             <ProtectedRoute>
               <Layout>
                 <AddTransaction />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/goals"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <Goals />
               </Layout>
             </ProtectedRoute>
           }

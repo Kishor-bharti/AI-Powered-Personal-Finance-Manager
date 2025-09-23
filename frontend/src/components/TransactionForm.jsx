@@ -3,14 +3,29 @@ import API from "../api";
 import "../styles/TransactionForm.css";
 
 function TransactionForm({ onAdd, editData, onUpdate }) {
+  const [goals, setGoals] = useState([]);
   const [formData, setFormData] = useState({
     type: "expense",
     category: "",
     amount: "",
     date: "",
     payment_method: "Cash",
-    description: ""
+    description: "",
+    goal_id: ""
   });
+
+  useEffect(() => {
+    // Fetch available goals when component mounts
+    const fetchGoals = async () => {
+      try {
+        const response = await API.get('/goals');
+        setGoals(response.data);
+      } catch (err) {
+        console.error('Error fetching goals:', err);
+      }
+    };
+    fetchGoals();
+  }, []);
 
   useEffect(() => {
     if (editData) {
@@ -20,7 +35,8 @@ function TransactionForm({ onAdd, editData, onUpdate }) {
         amount: editData.amount || "",
         date: editData.date || "",
         payment_method: editData.payment_method || "Cash",
-        description: editData.description || ""
+        description: editData.description || "",
+        goal_id: editData.goal_id || ""
       });
     }
   }, [editData]);
@@ -34,7 +50,7 @@ function TransactionForm({ onAdd, editData, onUpdate }) {
   };
 
   const handleSubmit = async () => {
-    const { type, category, amount, date, payment_method } = formData;
+    const { type, category, amount, date, payment_method, goal_id } = formData;
     
     if (!category || !amount || !date || !payment_method) {
       alert("Please fill all required fields");
@@ -50,6 +66,10 @@ function TransactionForm({ onAdd, editData, onUpdate }) {
       if (editData) {
         const response = await API.put(`/transactions/${editData.txn_id}`, formData);
         if (response.data) {
+          // Update goal progress if this is an income transaction and has a goal linked
+          if (type === 'income' && goal_id) {
+            await API.patch(`/goals/${goal_id}/progress`, { amount });
+          }
           onUpdate();
         } else {
           throw new Error("Failed to update transaction");
@@ -57,6 +77,10 @@ function TransactionForm({ onAdd, editData, onUpdate }) {
       } else {
         const response = await API.post("/transactions/add", formData);
         if (response.data) {
+          // Update goal progress if this is an income transaction and has a goal linked
+          if (type === 'income' && goal_id) {
+            await API.patch(`/goals/${goal_id}/progress`, { amount });
+          }
           onAdd();
           // Reset form after successful addition
           setFormData({
@@ -65,7 +89,8 @@ function TransactionForm({ onAdd, editData, onUpdate }) {
             amount: "",
             date: "",
             payment_method: "Cash",
-            description: ""
+            description: "",
+            goal_id: ""
           });
         } else {
           throw new Error("Failed to add transaction");
@@ -130,8 +155,24 @@ function TransactionForm({ onAdd, editData, onUpdate }) {
           <option value="Debit Card">Debit Card</option>
           <option value="UPI">UPI</option>
           <option value="Net Banking">Net Banking</option>
+          <option value="Bank Transfer">Bank Transfer</option>
           <option value="Other">Other</option>
         </select>
+
+        {formData.type === 'income' && (
+          <select
+            name="goal_id"
+            value={formData.goal_id}
+            onChange={handleChange}
+          >
+            <option value="">Link to Goal (Optional)</option>
+            {goals.map(goal => (
+              <option key={goal.goal_id} value={goal.goal_id}>
+                {goal.goal_name} ({((goal.current_amount / goal.target_amount) * 100).toFixed(0)}% complete)
+              </option>
+            ))}
+          </select>
+        )}
 
         <div className="full-width">
           <textarea

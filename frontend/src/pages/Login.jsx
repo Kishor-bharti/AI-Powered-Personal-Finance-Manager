@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api";
 import AuthHeader from "../components/AuthHeader";
@@ -6,6 +6,10 @@ import Footer from "../components/Footer";
 import "../styles/Auth.css";
 
 function Login() {
+  useEffect(() => {
+    document.title = "Finance Manager | Sign In";
+  }, []);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();

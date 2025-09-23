@@ -40,10 +40,19 @@ function Header() {
           onClick={() => navigate("/add")}
           style={{ 
             backgroundColor: window.location.pathname === "/add" ? "#4CAF50" : "#282c34",
-            marginRight: "15px"
+            marginRight: "10px"
           }}
         >
           Add Transaction
+        </button>
+        <button 
+          onClick={() => navigate("/goals")}
+          style={{ 
+            backgroundColor: window.location.pathname === "/goals" ? "#4CAF50" : "#282c34",
+            marginRight: "15px"
+          }}
+        >
+          Goals
         </button>
         <button 
           onClick={handleLogout} 

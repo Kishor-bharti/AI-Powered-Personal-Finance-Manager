@@ -4,6 +4,10 @@ import TransactionForm from "../components/TransactionForm";
 import "../styles/Dashboard.css";
 
 function Dashboard() {
+  useEffect(() => {
+    document.title = "Finance Manager | Dashboard";
+  }, []);
+
   const [transactions, setTransactions] = useState([]);
   const [filters, setFilters] = useState({
     startDate: "",

@@ -1,8 +1,13 @@
 // src/pages/AddTransaction.jsx
+import { useEffect } from "react";
 import TransactionForm from "../components/TransactionForm";
 import { useNavigate } from "react-router-dom";
 
 export default function AddTransaction() {
+  useEffect(() => {
+    document.title = "Finance Manager | Add Transaction";
+  }, []);
+
   const navigate = useNavigate();
   
   const handleAdded = () => {

@@ -4,14 +4,23 @@ const cors = require("cors");
 require("dotenv").config();
 
 const authRoutes = require("./routes/auth");
-const transactionRoutes = require("./routes/transactions");  // ✅ plural
-const goalRoutes = require("./routes/goals");                // ✅ plural
+const transactionRoutes = require("./routes/transactions");
 const analysisRoutes = require("./routes/analysis");
+const goalRoutes = require("./routes/goals");
+
+// Log middleware to debug routes
+const logRoutes = (req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  next();
+};
 
 const app = express();
+
+// Middleware
 app.use(cors());
 app.use(express.json());
 app.use(bodyParser.json());
+app.use(logRoutes);
 
 // Routes
 app.use("/api/auth", authRoutes);
