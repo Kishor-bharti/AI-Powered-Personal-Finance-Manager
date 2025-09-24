@@ -70,21 +70,37 @@ cd finance-manager
 ```
 
 ### 2️⃣ Setup backend
+
 ```bash
 cd backend
 npm install
 ```
-- Create `.env` file:
+
+#### Database Setup
+
+1. Create PostgreSQL database:
+```bash
+createdb finance_db
+```
+
+2. Create tables and indexes:
+```bash
+psql -U postgres -d finance_db -f schema.sql
+```
+
+3. (Optional) Add sample data:
+```bash
+psql -U postgres -d finance_db -f seed.sql
+```
+
+4. Create `.env` file:
 ```env
 PORT=5000
 DATABASE_URL=postgres://username:password@localhost:5432/finance_db
 JWT_SECRET=your_super_secret_key
 ```
-- Run DB migrations/seed:
-```bash
-psql -U postgres -d finance_db -f seed.sql
-```
-- Start server:
+
+5. Start server:
 ```bash
 npm run dev
 ```
